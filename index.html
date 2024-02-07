@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Quote Machine</title>
+  <link rel="shortcut icon"
+    href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOPkynoWII5EQ5z395D-hXINJJKjadS_fgvQ&usqp=CAU"
+    type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    html {
+      height: 100%;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .qoute_box {
+      background-color: #ffffff;
+      padding: 20px;
+      height: max-content;
+      border-radius: 10px;
+      min-width: none;
+      max-width: 500px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+    .col-2 {
+      flex: 0 0 auto;
+      width: 10.666667%;
+    }
+
+    #new-quote {
+      float: right;
+    }
+
+    #author {
+
+      text-align: end;
+      transition: ease-in-out 1s;
+      /* width: 100%; */
+    }
+
+    #text {
+      transition: ease-in-out 1s;
+    }
+
+    /* #new-quote
+{
+  float: right;
+}  */
+    #text,
+    #quoteicon,
+    #author,
+    .btn {
+      transition: color 1s;
+      /* Add transition for text color and button/icon color */
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <div class="container">
+    <div class="qoute_box" id="quote-box" style="background-color: #ffffff;">
+      <i class="bi bi-quote" style="font-size: 2rem;" id="quoteicon"></i>
+      <h3 id="text">You may be disappointed if you fail, but you are doomed if you don’t try.</h3>
+      <div class="row">
+        <p id="author">- Beverly Sills</p>
+      </div>
+      <div class="row buttons">
+        <div class="col-2">
+          <button class="btn btn-block" id="tweet-quote"><i class="bi bi-twitter"
+              style="font-size: 1rem; color: #ffffff;"></i></button>
+        </div>
+        <div class="col-1">
+          <button class="btn btn-block" id="copy-quote"><i class="bi bi-clipboard"
+              style="font-size: 1rem; color: #ffffff;"></i></button>
+        </div>
+        <div class="col-9">
+          <button class="btn btn-block" id="new-quote" style="color: #ffffff; font-weight: bolder;">New Quote</button>
+        </div>
+      </div>
+    </div>
+    <p style="color: #ffffff;"><i>by Meesum</i></p>
+  </div>
+
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Function to fetch a random quote from the API
+      async function fetchQuote() {
+        const apiUrl = 'https://api.api-ninjas.com/v1/quotes?category=love';
+
+
+        try {
+          const response = await fetch(apiUrl, {
+            headers: {
+              'X-Api-Key': 'Ba95HuJUYnF7mb9z8H4y6Q==mfDHbXGctKcMCIaa',
+            },
+          });
+          document.getElementById('text').style.opacity = 0;
+          document.getElementById('author').style.opacity = 0;
+
+
+          const data = await response.json();
+          const quote = data[0]; // Assuming the API returns an array of quotes
+
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          document.getElementById('text').textContent = quote.quote;
+          document.getElementById('author').textContent = `- ${quote.author}`;
+
+          // Fade in text
+          document.getElementById('text').style.opacity = 1;
+          document.getElementById('author').style.opacity = 1;
+
+
+          const randomColor = getRandomColor();
+          document.body.style.backgroundColor = randomColor;
+          // document.getElementById('quote-box').style.Color = randomColor;
+          document.getElementById('text').style.color = randomColor;
+          document.getElementById('quoteicon').style.color = randomColor;
+          document.getElementById('author').style.color = randomColor;
+          document.querySelectorAll('.btn').forEach(btn => {
+            btn.style.backgroundColor = randomColor;
+          });
+
+          // Change text color and button/icon color based on background color
+          updateTextColor(randomColor);
+
+        } catch (error) {
+          console.error('Error fetching quote:', error);
+        }
+      }
+      function getRandomColor() {
+        return '#' + Math.floor(Math.random() * 16777215).toString(16);
+      }
+      // Function to check if a color is light or dark
+      function isLightColor(color) {
+        const rgb = parseInt(color.slice(1), 16);
+        const r = (rgb >> 16) & 0xff;
+        const g = (rgb >> 8) & 0xff;
+        const b = (rgb >> 0) & 0xff;
+
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128; // Returns true for light colors, false for dark colors
+      }
+
+      // Event listener for the "New Quote" button
+      document.getElementById('new-quote').addEventListener('click', fetchQuote);
+      document.getElementById('tweet-quote').addEventListener('click', function () {
+        const quoteText = document.getElementById('text').textContent;
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(quoteText)}`;
+        window.open(tweetUrl, '_blank');
+      });
+
+      // Event listener for the "Copy to Clipboard" button
+      document.getElementById('copy-quote').addEventListener('click', function () {
+        const quoteText = document.getElementById('text').textContent;
+        copyToClipboard(quoteText);
+      });
+      function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Quote copied to clipboard!');
+      }
+      // Display an initial quote
+      fetchQuote();
+
+    });
+  </script>
+</body>
+
+</html>
